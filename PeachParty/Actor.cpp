@@ -6,37 +6,37 @@
 void Actor::changeDirection(){  //Change direction of actor
 	switch (getDirection()) {  
 		case 0:   //Facing right
-			if (sw->wallFound(getX() + 1, getY()) == true) {  //If a wall was found at that point, 
+			if (sw->wallFound(getX() + 2, getY()) == true) {  //If a wall was found at that point, 
 				setDirection(90);  //Change direction to up
 
-				if (sw->wallFound(getX(), getY() - 1) == true) {  //If a wall was found at the new direction, 
+				if (sw->wallFound(getX(), getY() - 2) == true) {  //If a wall was found at the new direction, 
 					changeDirection(); //Change direction again
 				}
 			}
 			break;
 		case 90:  //Facing up
-			if (sw->wallFound(getX(), getY() - 1) == true) {  //If a wall was found at that point, 
+			if (sw->wallFound(getX(), getY() - 2) == true) {  //If a wall was found at that point, 
 				setDirection(180);  //Change direction to left
 
-				if (sw->wallFound(getX() - 1, getY()) == true) {  //If a wall was found at the new direction, 
+				if (sw->wallFound(getX() - 2, getY()) == true) {  //If a wall was found at the new direction, 
 					changeDirection(); //Change direction again
 				}
 			}
 			break;
 		case 180:  //Facing left
-			if (sw->wallFound(getX() - 1, getY()) == true) {  //If a wall was found at that point, 
+			if (sw->wallFound(getX() - 2, getY()) == true) {  //If a wall was found at that point, 
 				setDirection(270);  //Change direction to up
 
-				if (sw->wallFound(getX(), getY() + 1) == true) {  //If a wall was found at the new direction,  
+				if (sw->wallFound(getX(), getY() + 2) == true) {  //If a wall was found at the new direction,  
 					changeDirection(); //Change direction again
 				}
 			}
 			break;
 		case 270:   //Facing down
-			if (sw->wallFound(getX(), getY() + 1) == true) {  //If a wall was found at that point, 
+			if (sw->wallFound(getX(), getY() + 2) == true) {  //If a wall was found at that point, 
 				setDirection(0);  //Change direction to up
 
-				if (sw->wallFound(getX() + 1, getY()) == true) {  //If a wall was found at the new direction, 
+				if (sw->wallFound(getX() + 2, getY()) == true) {  //If a wall was found at the new direction, 
 					changeDirection(); //Change direction again
 				}
 			}
@@ -47,7 +47,10 @@ void Actor::changeDirection(){  //Change direction of actor
 
 int CoinSquare::doSomething() {  //Manages behavior of square
 	if (getStatus()) { //Check if alive
-
+		if (getSW()->getBoard()->getContentsOf(getX(), getY()) == getSW()->getBoard()->Board::blue_coin_square)
+			m_avatar->setCoins(m_avatar->getCoins() + 3);
+		else if(getSW()->getBoard()->getContentsOf(getX(), getY()) == getSW()->getBoard()->Board::red_coin_square)
+			m_avatar->setCoins(m_avatar->getCoins() - 3);
 	}
 	else {  //If not, return
 		return;
@@ -55,7 +58,7 @@ int CoinSquare::doSomething() {  //Manages behavior of square
 
 }
 
-int Player::doSomething() {
+int Avatar::doSomething() {
 	{
 		if (waitingToRoll) {   //Check if not waiting to roll
 			if (getSW()->getAction(playerNum) == ACTION_ROLL) {
@@ -67,7 +70,11 @@ int Player::doSomething() {
 			}
 
 		}
-		else { //CHECK TO SEE IF ACTOR CAN MOVE HERE LATER
-			changeDirection();  
+		else {
+			changeDirection();  //Change directions if needed
+			moveForward(2);  //Move forward 2 pixels
+			ticks_to_move--;  //Decrement ticks to move
+			if (!ticks_to_move)  //If ticks to move is zero, set waiting to roll to true
+				waitingToRoll = true;
 		}
 }

@@ -16,8 +16,10 @@ public:
   virtual int init();
   virtual int move();
   virtual void cleanUp();
+  ~StudentWorld() { cleanUp(); };
   bool wallFound(int x, int y) const;
   bool overlap(int x, int y, Actor* actor) const;
+  Board* getBoard() const { return m_board; }
   
 private:
 	std::vector<Actor*> m_actors;

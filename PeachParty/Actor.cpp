@@ -64,33 +64,26 @@ void Avatar::doSomething()
 
 		}
 		else {
-			switch (getDirection()) {  //Change direction based on current direction if there is a wall
-			case 0:
-				if (getSW()->wallFound(getX() + 2, getY()) == true) {
+		
+				if (getDirection() == 0 && getSW()->wallFound(getX() + 1, getY()) == true) {
 					changeDirection();
 				}
 			
-				break;
-			case 90:
-				if (getSW()->wallFound(getX(), getY()-2) == true) {
+				else if (getDirection() == 90 && getSW()->wallFound(getX(), getY()-1) == true) {
 					changeDirection();
 				}
 			
-				break;
-			case 180:
-				if (getSW()->wallFound(getX() - 2, getY()) == true) {
+				else if (getDirection() == 180 && getSW()->wallFound(getX() - 1, getY()) == true) {
 					changeDirection();
 				}
 	
-				break;
-			case 270:
-				if (getSW()->wallFound(getX(), getY()+2) == true) {
+				else if (getDirection() == 270 && getSW()->wallFound(getX(), getY()+1) == true) {
 					changeDirection();
 				}
-			
-				break;
-			}
+		
 			moveForward(2);
+			increaseAnimationNumber();
+			animate();
 			ticks_to_move--;  //Decrement ticks to move
 			if (!ticks_to_move)  //If ticks to move is zero, set waiting to roll to true
 				waitingToRoll = true;

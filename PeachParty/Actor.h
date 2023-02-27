@@ -5,6 +5,8 @@
 #include "GameConstants.h"
 #include "GameWorld.h"
 
+class StudentWorld;
+
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
 class Actor : public  GraphObject  //Actor class inheriting from GraphObject
 {
@@ -12,7 +14,7 @@ class Actor : public  GraphObject  //Actor class inheriting from GraphObject
 		Actor(StudentWorld *sw, const int imageID, int startX, int startY, int dir = 0, int depth = 0, double size = 1.0)  //Constructor for Actor class
 			: GraphObject(imageID, startX, startY, dir, depth, size), m_alive(true), sw(sw)   //Initialize parameters
 		{}
-		virtual int doSomething()=0;   //Pure virtual method for doSomething, which will vary for each class
+		virtual void doSomething()=0;   //Pure virtual method for doSomething, which will vary for each class
 		
 		StudentWorld *getSW() const {  //Get StudentWorld pointer
 			return sw;
@@ -39,11 +41,11 @@ class Actor : public  GraphObject  //Actor class inheriting from GraphObject
 
 class Avatar : public Actor { //Player class
 	public:
-		Avatar(StudentWorld* sw, const int imageID, int startX, int startY)  //Constructor for player
-			: Actor(sw, imageID, startX, startY), coins(0), stars(0), vortex(false), ticks_to_move(0), waitingToRoll(false)  //Initialize Actor and private vars
+		Avatar(StudentWorld* sw, int playerNum, const int imageID, int startX, int startY)  //Constructor for player
+			: Actor(sw, imageID, startX, startY), coins(0), stars(0), vortex(false), ticks_to_move(0), waitingToRoll(false), playerNum(playerNum)  //Initialize Actor and private vars
 		{}
 		
-		virtual int doSomething();
+		virtual void doSomething();
 		void setCoins(int num) { coins = num; }  //Set coins
 		int getCoins() const { return coins; }  //Set coins
 
@@ -65,7 +67,7 @@ class CoinSquare : public Actor {  //Class for CoinSquare inheriting from Actor 
 
 
 		}
-		virtual int doSomething();
+		virtual void doSomething();
 private:
 	Avatar* m_avatar;
 };

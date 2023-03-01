@@ -5,7 +5,7 @@
 #include "Actor.h"
 #include "Board.h"
 #include <string>
-#include <vector>
+#include <list>
 
 // Students:  Add code to this file, StudentWorld.cpp, Actor.h, and Actor.cpp
 
@@ -28,7 +28,7 @@ public:
 
   
 private:
-	std::vector<Actor*> m_actors;
+	std::list<Actor*> m_actors;
 	Board* m_board;
 };
 

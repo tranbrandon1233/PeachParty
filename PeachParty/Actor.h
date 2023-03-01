@@ -42,7 +42,7 @@ class Actor : public  GraphObject  //Actor class inheriting from GraphObject
 class Avatar : public Actor { //Player class
 	public:
 		Avatar(StudentWorld* sw, int playerNum, const int imageID, int startX, int startY)  //Constructor for player
-			: Actor(sw, imageID, startX, startY), coins(0), stars(0), vortex(false), ticks_to_move(0), waitingToRoll(false), playerNum(playerNum)  //Initialize Actor and private vars
+			: Actor(sw, imageID, startX, startY), coins(0), stars(0), vortex(false), ticks_to_move(0), waitingToRoll(false), playerNum(playerNum), direction(0)  //Initialize Actor and private vars
 		{}
 		
 		virtual void doSomething();
@@ -51,6 +51,7 @@ class Avatar : public Actor { //Player class
 
 	private:
 		int playerNum;
+		int direction;
 		int coins;
 		int stars;
 		bool vortex;

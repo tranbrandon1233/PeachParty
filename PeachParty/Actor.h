@@ -49,14 +49,15 @@ class Avatar : public Actor { //Player class
 		Avatar(StudentWorld* sw, int playerNum, int startX, int startY)  //Constructor for player
 			: Actor(sw, playerNum==1 ? IID_PEACH : IID_YOSHI, startX, startY), coins(0), stars(0), vortex(false), ticks_to_move(0), waitingToRoll(false), playerNum(playerNum)  //Initialize Actor and private vars
 		{}
-		
 		virtual void doSomething();
 		void setCoins(int num) { coins = num; }  //Set coins
 		int getCoins() const { return coins; }  //Set coins
 		void setDirection(int dir) {}
+	
 
 
 	private:
+
 		int playerNum;
 		int coins;
 		int stars;

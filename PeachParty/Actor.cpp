@@ -4,21 +4,39 @@
 #include <iostream>
 
 // Students:  Add code to this file, Actor.h, StudentWorld.h, and StudentWorld.
+/*
+Avatar::~Avatar() {
+	while (temp != nullptr) {  //Delete all nodes for coordinates
+		temp = head;
+		head = head->next;
+		delete temp;
+	}
+}
 
-
+bool Actor::coordFound(int x, int y) {
+	Coords* coord = head;
+	while (coord != nullptr) {  //Delete all nodes for coordinates
+		coord = coord->next;
+		if (coord->x == x && coord->y == y) {
+			return true;
+		}
+	}
+	return false;
+}
+*/
 void Actor::moveActor(int dir) {
 	switch (dir) {
 	case 0:
-		moveTo(getX() + 2, getY());
+			moveTo(getX() + 2, getY());
 		break;
 	case 90:
-		moveTo(getX(), getY()-2);
+		moveTo(getX(), getY() + 2);
 		break;
 	case 180:
-		moveTo(getX()-2, getY());
+		moveTo(getX() - 2, getY());
 		break;
 	case 270:
-		moveTo(getX() + 2, getY());
+		moveTo(getX(), getY() - 2);
 		break;
 
 	}
@@ -27,28 +45,33 @@ void Actor::changeDirection(){  //Change direction of actor
 	switch (direction) { 
 		case 0:   //Facing right
 			if (getX()%16==0 && getY() % 16 == 0 && sw->wallFound(getX() + SPRITE_WIDTH, getY()) == true) {  //If a wall was found at that point, 
-				direction = 90;  //Change direction to up
+				direction = 90;  //Change direction and check again
+				setDirection(0);  //Change direction to left
 	
 			}
 			break;
 		case 90:  //Facing up
 			if (getY() % 16 == 0 && getX() % 16 == 0 && sw->wallFound(getX(), getY() +SPRITE_HEIGHT) == true) {  //If a wall was found at that point, 
 			
-				setDirection(180);  //Change direction to left
-				direction = 180;
+				setDirection(0);  //Change direction to left
+				direction = 270;
 
 	
 			}
 			break;
 		case 180:  //Facing left
 			if (getX() % 16 == 0 && getY() % 16 == 0 && sw->wallFound(getX() - SPRITE_WIDTH, getY()) == true) {  //If a wall was found at that point, 
-				direction = 270;
+				direction = 90; //Change direction
+				setDirection(0);  //Change direction to left
+
 		
 			}
 			break;
 		case 270:   //Facing down
 			if (getY() % 16 == 0 && getX() % 16 == 0 && sw->wallFound(getX(), getY() - SPRITE_HEIGHT) == true) {  //If a wall was found at that point, 
-				direction = 0;  //Change direction to right
+				std::cerr << "turn" << std::endl;
+				direction = 180;  //Change direction
+				setDirection(180);  //Change direction to left
 	
 			}
 			break;
@@ -87,8 +110,13 @@ void Avatar::doSomething()
 
 		}
 		else {
-		
 			changeDirection();
+			/*
+			temp->next = new Coords(); //Track coords here
+			temp = temp->next;
+			temp->x = getX();
+			temp->y = getY();
+			*/
 			moveActor(getDirection());
 			ticks_to_move--;  //Decrement ticks to move
 			if (!ticks_to_move)  //If ticks to move is zero, set waiting to roll to true

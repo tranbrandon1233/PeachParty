@@ -18,17 +18,22 @@ public:
   virtual void cleanUp();
   ~StudentWorld() { cleanUp(); };
   const bool wallFound(int x, int y);
+  const Actor* getAvatar(){ return m_avatar; }
   bool overlap(int x, int y, Actor* actor) const;
   Board* getBoard() const { return m_board; }
-  void addActor(Actor* actor) { m_actors.push_back(actor); }  //Adds actors to vector
-  void addPeach(const int x, const int y) { addActor(new Avatar(this, 1, IID_PEACH, x, y)); }  
-  void addYoshi(const int x, const int y) { addActor(new Avatar(this, 2, IID_YOSHI, x, y)); }
-  void addRedCoin(const int x, const int y) { addActor(new CoinSquare(this, IID_RED_COIN_SQUARE, x, y)); }
-  void addBlueCoin(const int x, const int y) { addActor(new CoinSquare(this, IID_BLUE_COIN_SQUARE, x, y)); }
+  Actor* addActor(Actor* actor) {
+	  m_actors.push_back(actor);
+	  return actor;  //Adds actors to vector
+  }
+  void addPeach(const int x, const int y) { m_avatar = addActor(new Avatar(this, 1, x, y)); }  
+  void addYoshi(const int x, const int y) { addActor(new Avatar(this, 2, x, y)); }
+  void addRedCoin(const int x, const int y) { addActor(new CoinSquare(this, 'r', x, y)); }
+  void addBlueCoin(const int x, const int y) { addActor(new CoinSquare(this, 'b', x, y)); }
 
   
 private:
 	std::list<Actor*> m_actors;
+	Actor* m_avatar;
 	Board* m_board;
 };
 

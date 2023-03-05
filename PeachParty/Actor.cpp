@@ -47,59 +47,96 @@ bool Actor::coordFound(int x, int y) const {
 bool Actor::isSquare(int x, int y) { //Returns true if actor is square, false otherwise
 	return getSW()->boardContents(x, y) == Board::bank_square || getSW()->boardContents(x, y) == Board::blue_coin_square || getSW()->boardContents(x, y) == Board::down_dir_square || getSW()->boardContents(x, y) == Board::event_square || getSW()->boardContents(x, y) == Board::left_dir_square || getSW()->boardContents(x, y) == Board::red_coin_square || getSW()->boardContents(x, y) == Board::right_dir_square || getSW()->boardContents(x, y) == Board::star_square || getSW()->boardContents(x, y) == Board::up_dir_square;
 }
+
 std::string Actor::checkFork(int dir) const {
-	int right = getX() + SPRITE_WIDTH;
-	int left = getX() - SPRITE_WIDTH;
-	int up = getY() + SPRITE_HEIGHT;
-	int down = getY() - SPRITE_HEIGHT;
+	int right = getX() + SPRITE_WIDTH <= BOARD_WIDTH ? getX() + SPRITE_WIDTH : -1;
+	int left = getX() - SPRITE_WIDTH >= 0 ? getX() - SPRITE_WIDTH : -1;
+	int up = getY() + SPRITE_HEIGHT <= BOARD_HEIGHT ? getY() + SPRITE_HEIGHT : -1;
+	int down = getY() - SPRITE_HEIGHT >= 0 ? getY() - SPRITE_HEIGHT : -1;
 	switch (getActorDirection()) {  //Check if there is a fork for each direction
 	case 0:
-		if ((!getSW()->wallFound(right, getY()) && !getSW()->wallFound(getX(), up) && !getSW()->wallFound(getX(), down))) {
-			return "urd";
+		if (right != -1 && up != -1 && down != -1) {
+			if ((!getSW()->wallFound(right, getY()) && !getSW()->wallFound(getX(), up) && !getSW()->wallFound(getX(), down))) {
+				return "urd";
+			}
 		}
-		else if (!getSW()->wallFound(right, getY()) && !getSW()->wallFound(getX(), down))
-			return "rd";
-		else if (!getSW()->wallFound(getX(), up) && !getSW()->wallFound(getX(), down))
-			return "ud";
-		else if (!getSW()->wallFound(getX(), up) && !getSW()->wallFound(right, getY()))
-			return "ur";
+		if (right != -1 && down != -1) {
+			if (!getSW()->wallFound(right, getY()) && !getSW()->wallFound(getX(), down))
+				return "rd";
+		}
+		if (up != -1 && down != -1) {
+			if (!getSW()->wallFound(getX(), up) && !getSW()->wallFound(getX(), down))
+				return "ud";
+		}
+		if (up != -1 && right != -1) {
+			if (!getSW()->wallFound(getX(), up) && !getSW()->wallFound(right, getY()))
+				return "ur";
+		}
 		break;
 	case 90:
-		if ((!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), up) && !getSW()->wallFound(right, getY()))) {
-			return "url";
+		if (right != -1 && up != -1 && left != -1) {
+			if ((!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), up) && !getSW()->wallFound(right, getY()))) {
+				return "url";
+			}
 		}
-		else if (!getSW()->wallFound(right, getY()) && !getSW()->wallFound(left, getY()))
-			return "rl";
-		else if (!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), up))
-			return "ul";
-		else if (!getSW()->wallFound(right, getY()) && !getSW()->wallFound(getX(), up))
-			return "ur";
+		if (right != -1 && left != -1) {
+			if (!getSW()->wallFound(right, getY()) && !getSW()->wallFound(left, getY()))
+				return "rl";
+		}
+		if ( up != -1 && left != -1) {
+			if (!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), up))
+				return "ul";
+		}
+		if (right != -1 && up != -1) {
+			if (!getSW()->wallFound(right, getY()) && !getSW()->wallFound(getX(), up))
+				return "ur";
+		}
 		break;
 	case 180:
-		if ((!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), up) && !getSW()->wallFound(getX(), down))) {
-			return "uld";
+		if (down != -1 && up != -1 && left != -1) {
+			if ((!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), up) && !getSW()->wallFound(getX(), down))) {
+				return "uld";
+			}
 		}
-		else if (!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), up))
-			return "ul";
-		else if (!getSW()->wallFound(getX(), up) && !getSW()->wallFound(getX(), down))
-			return "ud";
-		else if (!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), down))
-			return "ld";
+		if ( up != -1 && left != -1) {
+			if (!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), up))
+				return "ul";
+		}
+		if (up != -1 && down != -1) {
+			if (!getSW()->wallFound(getX(), up) && !getSW()->wallFound(getX(), down))
+				return "ud";
+		}
+		if (down != -1 && left != -1) {
+
+			if (!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), down))
+				return "ld";
+		}
 		break;
 	case 270:
-		if ((!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), down) && !getSW()->wallFound(right, getY()))) {
-			return "lrd";
+		if (right != -1 && down != -1 && left != -1) {
+
+			if ((!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), down) && !getSW()->wallFound(right, getY()))) {
+				return "lrd";
+			}
 		}
-		else if (!getSW()->wallFound(left, getY()) && !getSW()->wallFound(right, getY()))
-			return "lr";
-		else if (!getSW()->wallFound(right, getY()) && !getSW()->wallFound(getX(), down))
-			return "rd";
-		else if (!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), down))
-			return "ld";
+		if (right != -1 && left != -1) {
+
+			if (!getSW()->wallFound(left, getY()) && !getSW()->wallFound(right, getY()))
+				return "lr";
+		}
+		if (right != -1 && down != -1) {
+			if (!getSW()->wallFound(right, getY()) && !getSW()->wallFound(getX(), down))
+				return "rd";
+		}
+		if (down != -1 && left != -1) {
+			if (!getSW()->wallFound(left, getY()) && !getSW()->wallFound(getX(), down))
+				return "ld";
+		}
 		break;
 	}
 	return "";  //Return false if not found
 }
+
 void Actor::moveActor(int dir) {
 	switch (dir) {
 	case 0:
@@ -166,11 +203,39 @@ void Actor::changeDirection(char turn) {  //Change direction of actor
 
 void CoinSquare::doSomething() {  //Manages behavior of square
 	if (getStatus()) { //Check if alive
-		if (getSW()->boardContents(getX(), getY()) == Board::blue_coin_square)
-			m_avatar->setCoins( m_avatar->getCoins()+3);
-		else if(getSW()->boardContents(getX(), getY()) == Board::red_coin_square)
-			m_avatar->setCoins(m_avatar->getCoins() - 3);
-	}
+		if (getSW()->getPeach() != nullptr) {
+			if (getSW()->getPeach()->getX() == getX() && getSW()->getPeach()->getY() == getY() && getSW()->getPeach()->getTicks() == 0 && !activated) { //If player landed on coin square
+				if (getSW()->boardContents(getX(), getY()) == Board::blue_coin_square) {
+					getSW()->getPeach()->setCoins(getSW()->getPeach()->getCoins() + 3);
+					getSW()->playSound(SOUND_GIVE_COIN);
+				}
+				else if (getSW()->boardContents(getX(), getY()) == Board::red_coin_square) {
+					getSW()->getPeach()->setCoins(getSW()->getPeach()->getCoins() - 3);
+					getSW()->playSound(SOUND_TAKE_COIN);
+				}
+				activated = true;
+
+			}
+		}
+		if (getSW()->getYoshi() != nullptr) {
+			if (getSW()->getYoshi()->getX() == getX() && getSW()->getYoshi()->getY() == getY() && getSW()->getYoshi()->getTicks() == 0 && !activated) { //If player landed on coin square
+				if (getSW()->boardContents(getX(), getY()) == Board::blue_coin_square) {
+					getSW()->getYoshi()->setCoins(getSW()->getYoshi()->getCoins() + 3);
+					getSW()->playSound(SOUND_GIVE_COIN);
+				}
+				else if (getSW()->boardContents(getX(), getY()) == Board::red_coin_square) {
+					getSW()->getYoshi()->setCoins(getSW()->getYoshi()->getCoins() - 3);
+					getSW()->playSound(SOUND_TAKE_COIN);
+				}
+				activated = true;
+
+			}
+		}
+			else if ((getSW()->getPeach()->getX() != getX() || getSW()->getPeach()->getY() != getY()) && ((getSW()->getYoshi()->getX() != getX() || getSW()->getYoshi()->getY() != getY()))) { //Reset activation once player leaves
+				activated = false;
+			}
+		}
+
 	else {  //If not, return
 		return;
 	}
@@ -183,7 +248,7 @@ void Vortex::doSomething() {
 }
 void Avatar::doSomething() 
 	{
-		if (waitingToRoll) {   //Check if not waiting to roll
+		if (waitingToRoll) {   //Check if waiting to roll
 			if (getSW()->getAction(playerNum) == ACTION_ROLL) {
 				changeDirection();  //Change direction if needed
 				ticks_to_move = 8 * randInt(1, 10);  //Set ticks to move
@@ -215,7 +280,7 @@ void Avatar::doSomething()
 		}
 		else {
 	
-			if (getSW()->boardContents(getX(), getY()) == Board::down_dir_square) { //If on top of a dir square
+				if (getSW()->boardContents(getX(), getY()) == Board::down_dir_square) { //If on top of a dir square
 				changeDirection('d');
 			}
 			else if (getSW()->boardContents(getX(), getY()) == Board::up_dir_square) {
@@ -228,13 +293,17 @@ void Avatar::doSomething()
 				changeDirection('r');
 			}
 			else if (checkFork(getActorDirection()) != "") { //If there is a fork, change direction based on user input
+					cerr << checkFork(getActorDirection()) << endl;
+					int tr = getSW()->getAction(playerNum);
+					cerr << tr << endl;
+
 				if (getSW()->getAction(playerNum) == ACTION_LEFT && checkFork(getActorDirection()).find("l") != std::string::npos) {
 					changeDirection('l');
 				}
 				else if (getSW()->getAction(playerNum) == ACTION_RIGHT && checkFork(getActorDirection()).find("r") != std::string::npos) {
 					changeDirection('r');
 				}
-				else if (getSW()->getAction(playerNum) == ACTION_DOWN && checkFork(getActorDirection()).find("d") != std::string::npos) {
+				else if (/*getSW()->getAction(playerNum) == ACTION_DOWN && */checkFork(getActorDirection()).find("d") != std::string::npos) {
 					changeDirection('d');
 				}
 				else if (getSW()->getAction(playerNum) == ACTION_UP && checkFork(getActorDirection()).find("u") != std::string::npos) {
@@ -302,11 +371,11 @@ void Avatar::swapPosition(Avatar* avatar) {
 
 
 void Avatar::teleport() {
-	int x = rand() % 15; //Get random x and y
-	int y = rand() % 15;
+	int x = randInt(0,15); //Get random x and y
+	int y = randInt(0, 15); //Get random x and y
 	while (!isSquare(x, y)) {  //Loop while  (x,y) is not a square
-		x = rand() % 15; //Get random x and y
-		y = rand() % 15;
+		x = randInt(0,15); //Get random x and y
+		y = randInt(0,15);
 	}
 	moveTo(x, y);  //Move the avatar there
 	setActorDirection(-1); //Make direction invalid

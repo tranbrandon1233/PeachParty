@@ -269,7 +269,7 @@ bool Actor::checkValidDir() { //Check if direction is valid
 	}
 	return true;
 }
-int Actor::deductCoins(int amt, Avatar* avatar) {
+int Square::deductCoins(int amt, Avatar* avatar) {
 	if (avatar->getCoins() - amt >= 0) {  //If the player has at least 5 coins
 		avatar->setCoins(avatar->getCoins() - amt);  //Take 5 of their coins and deposit into bank
 		return amt;
@@ -283,14 +283,16 @@ int Actor::deductCoins(int amt, Avatar* avatar) {
 }
 void Actor::resetActivation(Avatar* avatar, bool& activation) {
 	if (avatar != nullptr) {
-		if (avatar->getX() != getX() || avatar->getY() != getY())  //Reset once they move off of it
+		int x1 = avatar->getX();
+		int x2 = getY();
+		if (getSW()->overlapsBaddie(avatar->getX(), avatar->getY()) == nullptr)  //Reset once they move off of it
 			activation = false;
 	}
 
 }
 
 bool Actor::landedOnSquare(int x, int y, Avatar* avatar, bool& activation) {
-	if (avatar != nullptr) {
+	if (avatar != nullptr && !activation) {
 		if (avatar->getX() == getX() && avatar->getY() == getY() && avatar->getTicks() == 0) { //If player landed on coin square
 			activation = true;
 			return true;
@@ -610,26 +612,12 @@ void Actor::teleport() {
 void Baddies::pauseAction(Avatar* avatar, bool activation, std::string baddie) {
 	if (avatar != nullptr) {
 		if (getX() == avatar->getX() && getY() == avatar->getY() && avatar->getRollState() == true && !activation) {
-			switch (randInt(1, 2)) {
-			case 1:  //50% chance
-				if (baddie == "Bowser") {  //Lose coins and stars if Bowser
+			if (baddie == "Bowser") {  //Lose coins and stars if Bowser
+				switch (randInt(1, 2)) {
+				case 1:  //50% chance
 					avatar->setCoins(0);
 					avatar->setStars(0);
-				}
-				else if(avatar->getPlayerNum() == 1){  //Swap them if Boo
-					avatar->swapCoins(getSW()->getYoshi());
-					avatar->swapStars(getSW()->getYoshi());
-				}
-				else if (avatar->getPlayerNum() == 2) {
-					avatar->swapCoins(getSW()->getPeach());
-					avatar->swapStars(getSW()->getPeach());
-				}
-				getSW()->playSound(baddie == "Bowser" ? SOUND_BOWSER_ACTIVATE : SOUND_BOO_ACTIVATE);  //Play sound if Bowser or Boo
-				setPeachActivation(avatar->getPlayerNum() == 1 ? true : getPeachActivation());  //Set activation as needed
-				setYoshiActivation(avatar->getPlayerNum() == 2 ? true : getYoshiActivation());
-				break;
-			case 2:
-				if (baddie == "Boo") {
+
 					if (avatar->getPlayerNum() == 1) {  //Swap them if Boo
 						avatar->swapCoins(getSW()->getYoshi());
 						avatar->swapStars(getSW()->getYoshi());
@@ -637,11 +625,25 @@ void Baddies::pauseAction(Avatar* avatar, bool activation, std::string baddie) {
 					else if (avatar->getPlayerNum() == 2) {
 						avatar->swapCoins(getSW()->getPeach());
 						avatar->swapStars(getSW()->getPeach());
-
 					}
+					break;
 				}
-				break;
 			}
+			else if (baddie == "Boo") {
+				if (avatar->getPlayerNum() == 1) {  //Swap them if Boo
+					avatar->swapCoins(getSW()->getYoshi());
+					avatar->swapStars(getSW()->getYoshi());
+				}
+				else if (avatar->getPlayerNum() == 2) {
+					avatar->swapCoins(getSW()->getPeach());
+					avatar->swapStars(getSW()->getPeach());
+
+				}
+				getSW()->playSound(baddie == "Bowser" ? SOUND_BOWSER_ACTIVATE : SOUND_BOO_ACTIVATE);  //Play sound if Bowser or Boo
+				setPeachActivation(avatar->getPlayerNum() == 1 ? true : getPeachActivation());  //Set activation as needed
+				setYoshiActivation(avatar->getPlayerNum() == 2 ? true : getYoshiActivation());
+			}
+
 		}
 		resetActivation(avatar, activation); //Reset activation
 	}

@@ -22,10 +22,7 @@ public:
   Board* getBoard() const { return m_board; }
   Avatar* getPeach() { return m_peach; }
   Avatar* getYoshi() { return m_yoshi; }
-  void addActor(Actor* actor) {
-	  if (actor != nullptr && actor->getSW() != nullptr)
-		m_actors.push_back(actor);
-  }
+  void addActor(Actor* actor);
   void addPeach(const int x, const int y) { 
 	  m_yoshi = new Avatar(this, 1, x, y);
 	  addActor(m_yoshi);

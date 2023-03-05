@@ -720,7 +720,9 @@ void Baddies::doSomething(std::string baddie) {
 		
 	}
 	if (getImpacted()) {  //If impacted,
-		teleport();  //Teleport and pause
+		teleport();  //Teleport, set direciton, and pause
+		setDirection(0);
+		setActorDirection(0);
 		setPaused(true);
 		setPauseCount(180);
 	}

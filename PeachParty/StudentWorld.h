@@ -23,7 +23,7 @@ public:
   Avatar* getPeach() { return m_peach; }
   Avatar* getYoshi() { return m_yoshi; }
   void addActor(Actor* actor) {
-	  if(actor != nullptr)
+	  if (actor != nullptr && actor->getSW() != nullptr)
 		m_actors.push_back(actor);
   }
   void addPeach(const int x, const int y) { 

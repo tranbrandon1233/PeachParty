@@ -18,7 +18,7 @@ public:
   virtual void cleanUp();
   ~StudentWorld() { cleanUp(); };
   const bool wallFound(int x, int y);
-  bool overlap(int x, int y, Actor* actor) const;
+  Actor* overlapsBaddie(int x, int y) const;
   Board* getBoard() const { return m_board; }
   Avatar* getPeach() { return m_peach; }
   Avatar* getYoshi() { return m_yoshi; }
@@ -35,13 +35,13 @@ public:
 		  addActor(m_peach); 
   }
  void deleteSquare(int x, int y);
- void addRedCoin(const int x, const int y);
+  void addRedCoin(const int x, const int y);
   void addBlueCoin(const int x, const int y);
   void addStarSquare(const int x, const int y);
   void addDirectionalSquare(const int x, const int y, const char dir);
   void addBankSquare(const int x, const int y);
   void addEventSquare(const int x, const int y);
-  void addVortex(const int x, const int y);
+  void addVortex(const int x, const int y, int dir);
   void addDroppingSquare(const int x, const int y);
   void addBowser(const int x, const int y);
   void addBoo(const int x, const int y);

@@ -450,8 +450,20 @@ void DroppingSquare::doSomething() {
 
 
 void Vortex::doSomething() {
+	if (!getStatus()) {
+		return;
+	}
+	moveActor();
 
-
+	if (getX() > BOARD_WIDTH || getX() < 0 || getY() < 0 || getY() > BOARD_HEIGHT) {
+		setStatus(false);
+	}
+	Actor* baddie = getSW()->overlapsBaddie(getX(), getY());
+	if (baddie != nullptr) {  //If baddie hit, kill it
+		baddie->setImpacted(true);
+		setStatus(false);  //Delete self
+		getSW()->playSound(SOUND_HIT_BY_VORTEX);
+	}
 
 }
 
@@ -467,18 +479,18 @@ void Avatar::doSomething()
 				waitingToRoll = false;  //No longer waiting to roll
 			}
 			else if (getSW()->getAction(playerNum) == ACTION_FIRE && vortex) {  //If firing and has a vortex
-				switch (getDirection()) {  //Create vortex based on direction
+				switch (getActorDirection()) {  //Create vortex based on direction
 				case 0:
-					getSW()->addVortex(getX()+SPRITE_WIDTH, getY());
+					getSW()->addVortex(getX()+SPRITE_WIDTH, getY(), getActorDirection());
 					break;
 				case 90:
-					getSW()->addVortex(getX(), getY() + SPRITE_HEIGHT);
+					getSW()->addVortex(getX(), getY() + SPRITE_HEIGHT, getActorDirection());
 					break;
 				case 180:
-					getSW()->addVortex(getX() - SPRITE_WIDTH, getY());
+					getSW()->addVortex(getX() - SPRITE_WIDTH, getY(), getActorDirection());
 					break;
 				case 270:
-					getSW()->addVortex(getX(), getY() - SPRITE_HEIGHT);
+					getSW()->addVortex(getX(), getY() - SPRITE_HEIGHT, getActorDirection());
 					break;
 				}
 				getSW()->playSound(SOUND_PLAYER_FIRE);

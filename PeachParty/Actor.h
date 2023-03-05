@@ -28,8 +28,8 @@ class Actor : public  GraphObject  //Actor class inheriting from GraphObject
 		void setStatus(bool status) {
 			m_alive = status;
 		}
-
-	
+		void forkDir(int num);
+		bool onSquare();
 		
 		std::string checkFork(int dir) const;
 	

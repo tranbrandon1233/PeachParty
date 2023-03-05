@@ -121,10 +121,10 @@ int StudentWorld::move()
 			setGameStatText("Yoshi's Coins: " + std::to_string(getPeach()->getCoins()) + "  Yoshi's Stars: " + std::to_string(getPeach()->getStars()));
 	}
 
-			if (timeRemaining() == 0)
+			if (timeRemaining() == 0)  //If out of time
 		{
 			
-				playSound(SOUND_GAME_FINISHED);
+				playSound(SOUND_GAME_FINISHED);  //Finish game and tally score for winner
 				if (getYoshi()->getCoins() + getYoshi()->getStars() > getPeach()->getCoins() + getPeach()->getStars())
 			{
 					setFinalScore(getYoshi()->getStars(), getYoshi()->getCoins());

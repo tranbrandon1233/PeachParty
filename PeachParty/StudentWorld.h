@@ -23,7 +23,8 @@ public:
   Avatar* getPeach() { return m_peach; }
   Avatar* getYoshi() { return m_yoshi; }
   void addActor(Actor* actor) {
-	  m_actors.push_back(actor);
+	  if(actor != nullptr)
+		m_actors.push_back(actor);
   }
   void addPeach(const int x, const int y) { 
 	  m_yoshi = new Avatar(this, 1, x, y);
@@ -33,10 +34,18 @@ public:
 	  m_peach = new Avatar(this, 2, x, y);
 		  addActor(m_peach); 
   }
-  void addRedCoin(const int x, const int y) { addActor(new CoinSquare(this, 'r', x, y)); }
-  void addBlueCoin(const int x, const int y) { addActor(new CoinSquare(this, 'b', x, y)); }
-  void addVortex(const int x, const int y) { addActor(new Vortex(this, x, y)); }
-  Board::GridEntry boardContents(int x, int y) { return getBoard()->getContentsOf(x/ SPRITE_WIDTH, y / SPRITE_HEIGHT); }
+ void deleteSquare(int x, int y);
+ void addRedCoin(const int x, const int y);
+  void addBlueCoin(const int x, const int y);
+  void addStarSquare(const int x, const int y);
+  void addDirectionalSquare(const int x, const int y, const char dir);
+  void addBankSquare(const int x, const int y);
+  void addEventSquare(const int x, const int y);
+  void addVortex(const int x, const int y);
+  void addDroppingSquare(const int x, const int y);
+  void addBowser(const int x, const int y);
+  void addBoo(const int x, const int y);
+  Board::GridEntry boardContents(int x, int y) const { return getBoard()->getContentsOf(x/ SPRITE_WIDTH, y / SPRITE_HEIGHT); }
   void setBankTotal(int total) { bankTotal = total; }
   int getBankTotal() { return bankTotal; }
 private:

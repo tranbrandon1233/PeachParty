@@ -37,12 +37,14 @@ public:
   void addBlueCoin(const int x, const int y) { addActor(new CoinSquare(this, 'b', x, y)); }
   void addVortex(const int x, const int y) { addActor(new Vortex(this, x, y)); }
   Board::GridEntry boardContents(int x, int y) { return getBoard()->getContentsOf(x/ SPRITE_WIDTH, y / SPRITE_HEIGHT); }
-  
+  void setBankTotal(int total) { bankTotal = total; }
+  int getBankTotal() { return bankTotal; }
 private:
 	std::list<Actor*> m_actors;
 	Board* m_board;
 	Avatar* m_peach;
 	Avatar* m_yoshi;
+	int bankTotal;
 };
 
 #endif // STUDENTWORLD_H_

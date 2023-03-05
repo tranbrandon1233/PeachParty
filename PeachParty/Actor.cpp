@@ -141,7 +141,7 @@ void Actor::moveActor(int dir) {
 	switch (dir) {
 	case 0:
 	//	if (!coordFound(getX() + 2, getY()))  //If coordinates have not been passed before, move there
-			moveTo(getX() + 2, getY());
+				moveTo(getX() + 2, getY());
 		
 		break;
 	case 90:
@@ -165,35 +165,79 @@ void Actor::moveActor(int dir) {
 }
 void Actor::changeDirection(char turn) {  //Change direction of actor
 	cerr << getX()/SPRITE_WIDTH << " " << (getY() - SPRITE_HEIGHT) / SPRITE_HEIGHT << endl;
+	if (turn != ' ') {  //Case if required to turn
+		switch (turn) {
+		case 'u':
+			direction = 90;  //Change direction
+			setDirection(0);  //Change direction to left
+			break;
+		case 'd':
+			direction = 270;  //Change direction
+			setDirection(0);  //Change direction to left
+			break;
+		case 'l':
+			direction = 180;  //Change direction
+			setDirection(180);  //Change direction to left
+			break;
+		case 'r':
+			direction = 0;  //Change direction
+			setDirection(0);  //Change direction to left
+			break;
+		}
+		return;
+	}
 	switch (direction) { 
 		case 0:   //Facing right
-			if ((getX()%16==0 && getY() % 16 == 0 && sw->wallFound(getX() + SPRITE_WIDTH, getY()) == true) || turn == 'u') {  //If a wall was found at that point, 
-				direction = 90;  //Change direction and check again
-				setDirection(0);  //Change direction to left
+			if ((getX()%16==0 && getY() % 16 == 0 && sw->wallFound(getX() + SPRITE_WIDTH, getY()) == true)) {  //If a wall was found at that point, 
+				if (sw->wallFound(getX(), getY() + SPRITE_HEIGHT) == false) {
+					direction = 90;  //Change direction
+					setDirection(0);  //Change direction to up
+				}
+				else if (sw->wallFound(getX(), getY() - SPRITE_HEIGHT) == false) {
+					direction = 270;  //Change direction
+					setDirection(0);  //Change direction to down
+
+				}
 	
 			}
 			break;
 		case 90:  //Facing up
-			if ((getY() % 16 == 0 && getX() % 16 == 0 && sw->wallFound(getX(), getY() +SPRITE_HEIGHT) == true) || turn == 'd') {  //If a wall was found at that point, 
-			
-				setDirection(0);  //Change direction to left
-				direction = 270;
+			if ((getY() % 16 == 0 && getX() % 16 == 0 && sw->wallFound(getX(), getY() +SPRITE_HEIGHT) == true)) {  //If a wall was found at that point, 
+				if (sw->wallFound(getX() + SPRITE_WIDTH, getY()) == false) {
+					direction = 0;  //Change direction
+					setDirection(0);  //Change direction to right
+				}
+				else if (sw->wallFound(getX() - SPRITE_WIDTH, getY()) == false) {
+					direction = 180;  //Change direction
+					setDirection(180);  //Change direction to left
 
-	
+				}	
 			}
 			break;
 		case 180:  //Facing left
-			if ((getX() % 16 == 0 && getY() % 16 == 0 && sw->wallFound(getX() - SPRITE_WIDTH, getY()) == true) || turn == 'r') {  //If a wall was found at that point, 
-				direction = 0; //Change direction
-				setDirection(0);  //Change direction to left
+			if ((getX() % 16 == 0 && getY() % 16 == 0 && sw->wallFound(getX() - SPRITE_WIDTH, getY()) == true)) {  //If a wall was found at that point, 
+				if (sw->wallFound(getX(), getY() + SPRITE_HEIGHT) == false) {
+					direction = 90;  //Change direction
+					setDirection(0);  //Change direction to left
+				}
+				else if (sw->wallFound(getX(), getY() - SPRITE_HEIGHT) == false) {
+					direction = 270;  //Change direction
+					setDirection(0);  //Change direction to left
 
-		
+				}
 			}
 			break;
 		case 270:   //Facing down
-			if ((getY() % 16 == 0 && getX() % 16 == 0 && sw->wallFound(getX(), getY() - SPRITE_HEIGHT) == true) || turn == 'l') {  //If a wall was found at that point, 
-				direction = 180;  //Change direction
-				setDirection(180);  //Change direction to left
+			if ((getY() % 16 == 0 && getX() % 16 == 0 && sw->wallFound(getX(), getY() - SPRITE_HEIGHT) == true)) {  //If a wall was found at that point, 
+				if (sw->wallFound(getX() + SPRITE_WIDTH, getY()) == false) {
+					direction = 0;  //Change direction
+					setDirection(0);  //Change direction to right
+				}
+				else if (sw->wallFound(getX() - SPRITE_WIDTH, getY()) == false) {
+					direction = 180;  //Change direction
+					setDirection(180);  //Change direction to left
+
+				}
 	
 			}
 			break;
@@ -201,24 +245,46 @@ void Actor::changeDirection(char turn) {  //Change direction of actor
 		}
 }
 
+bool Actor::landedOnSquare(int x, int y, Avatar* avatar, bool& activation) {
+	if (avatar != nullptr) {
+		if (avatar->getX() == getX() && avatar->getY() == getY() && avatar->getTicks() == 0) { //If player landed on coin square
+			activation = true;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Actor::passedSquare(int x, int y, Avatar* avatar, bool& activation) {
+	if (avatar != nullptr && !activation) {
+		if (avatar->getX() == getX() && avatar->getY() == getY()) { //If player landed on coin 
+			activation = true;
+			return true;
+		}
+	}
+	return false;
+}
+
+void Actor::resetActivation(bool& peachActivation, bool& yoshiActivation) {
+	if (getSW()->getPeach()->getX() != getX() || getSW()->getPeach()->getY() != getY())  //Reset once they move off of it
+		peachActivation = false;
+	if ((getSW()->getYoshi()->getX() != getX() || getSW()->getYoshi()->getY() != getY()))
+		yoshiActivation = false;
+}
 void CoinSquare::doSomething() {  //Manages behavior of square
 	if (getStatus()) { //Check if alive
-		if (getSW()->getPeach() != nullptr) {
-			if (getSW()->getPeach()->getX() == getX() && getSW()->getPeach()->getY() == getY() && getSW()->getPeach()->getTicks() == 0 && !activated) { //If player landed on coin square
+		if(landedOnSquare(getX(), getY(), getSW()->getPeach(), peachActivated)) { //If player landed on coin square
 				if (getSW()->boardContents(getX(), getY()) == Board::blue_coin_square) {
 					getSW()->getPeach()->setCoins(getSW()->getPeach()->getCoins() + 3);
-					getSW()->playSound(SOUND_GIVE_COIN);
 				}
 				else if (getSW()->boardContents(getX(), getY()) == Board::red_coin_square) {
 					getSW()->getPeach()->setCoins(getSW()->getPeach()->getCoins() - 3);
 					getSW()->playSound(SOUND_TAKE_COIN);
 				}
-				activated = true;
 
 			}
-		}
-		if (getSW()->getYoshi() != nullptr) {
-			if (getSW()->getYoshi()->getX() == getX() && getSW()->getYoshi()->getY() == getY() && getSW()->getYoshi()->getTicks() == 0 && !activated) { //If player landed on coin square
+	
+		if (landedOnSquare(getX(), getY(), getSW()->getYoshi(), yoshiActivated)) { //If player landed on coin square
 				if (getSW()->boardContents(getX(), getY()) == Board::blue_coin_square) {
 					getSW()->getYoshi()->setCoins(getSW()->getYoshi()->getCoins() + 3);
 					getSW()->playSound(SOUND_GIVE_COIN);
@@ -227,13 +293,9 @@ void CoinSquare::doSomething() {  //Manages behavior of square
 					getSW()->getYoshi()->setCoins(getSW()->getYoshi()->getCoins() - 3);
 					getSW()->playSound(SOUND_TAKE_COIN);
 				}
-				activated = true;
 
 			}
-		}
-			else if ((getSW()->getPeach()->getX() != getX() || getSW()->getPeach()->getY() != getY()) && ((getSW()->getYoshi()->getX() != getX() || getSW()->getYoshi()->getY() != getY()))) { //Reset activation once player leaves
-				activated = false;
-			}
+		resetActivation(peachActivated, yoshiActivated);
 		}
 
 	else {  //If not, return
@@ -241,8 +303,107 @@ void CoinSquare::doSomething() {  //Manages behavior of square
 	}
 
 }
+void StarSquare::doSomething() {
+	
+		if (passedSquare(getX(), getY(), getSW()->getPeach(), peachActivated)) { //If square has not been activated
+			if (getSW()->getPeach()->getCoins() < 20) { //If player does not have enough coins to buy star, return
+				return;
+			}
+			else {  //If player has enough coins, buy star
 
-void DirectionalSquare::doSomething() {}
+				getSW()->getPeach()->setCoins(getSW()->getPeach()->getCoins() - 20);
+				getSW()->getPeach()->setStars(getSW()->getPeach()->getStars() + 1);
+				getSW()->playSound(SOUND_GIVE_STAR);
+			}
+		}
+			if (passedSquare(getX(), getY() == getY(), getSW()->getYoshi(), yoshiActivated)) { //If player landed on star square
+				if (getSW()->getYoshi()->getCoins() < 20) {  //If player does not have enough coins to buy star, return
+					return;
+				}
+				else {  //If player has enough coins, buy star
+					getSW()->getYoshi()->setCoins(getSW()->getYoshi()->getCoins() - 20);
+					getSW()->getYoshi()->setStars(getSW()->getYoshi()->getStars() + 1);
+					getSW()->playSound(SOUND_GIVE_STAR);
+				}
+			}
+	
+			resetActivation(peachActivated, yoshiActivated);
+}
+
+void BankSquare::doSomething() {
+		if (landedOnSquare(getX(), getY(), getSW()->getPeach(), peachActivated)) { //If player landed on bank square
+				getSW()->getPeach()->setCoins(getSW()->getPeach()->getCoins() + getSW()->getBankTotal());  //Give them the bank total and empty it
+				getSW()->setBankTotal(0);
+				getSW()->playSound(SOUND_WITHDRAW_BANK);
+			}
+
+			else if(passedSquare(getX(), getY(), getSW()->getPeach(), peachActivated)){ //If player passed the bank square
+				if (getSW()->getPeach()->getCoins() - 5 >= 0) {  //If the player has at least 5 coins
+					getSW()->getPeach()->setCoins(getSW()->getPeach()->getCoins() - 5);  //Take 5 of their coins and deposit into bank
+					getSW()->setBankTotal(5 + getSW()->getBankTotal());
+				}
+				else {  //If not, take what they do have and deposit into bank
+					getSW()->setBankTotal(getSW()->getPeach()->getCoins() + getSW()->getBankTotal());
+					getSW()->getPeach()->setCoins(0);
+
+				}
+				getSW()->playSound(SOUND_DEPOSIT_BANK);
+			}
+		
+	
+		if (landedOnSquare(getX(), getY(), getSW()->getYoshi(), yoshiActivated)) { //If player landed on bank square
+				getSW()->getYoshi()->setCoins(getSW()->getYoshi()->getCoins() + getSW()->getBankTotal());  //Give them the bank total and empty it
+				getSW()->setBankTotal(0);
+				getSW()->playSound(SOUND_WITHDRAW_BANK);
+			}
+
+			else if(passedSquare(getX(), getY(), getSW()->getYoshi(), yoshiActivated)){ //If player passed the bank square
+				if (getSW()->getYoshi()->getCoins() - 5 >= 0) {  //If the player has at least 5 coins
+					getSW()->getYoshi()->setCoins(getSW()->getYoshi()->getCoins() - 5);  //Take 5 of their coins and deposit into bank
+					getSW()->setBankTotal(5 + getSW()->getBankTotal());
+				}
+				else {  //If not, take what they do have and deposit into bank
+					getSW()->setBankTotal(getSW()->getYoshi()->getCoins() + getSW()->getBankTotal());
+					getSW()->getYoshi()->setCoins(0);
+
+				}
+				getSW()->playSound(SOUND_DEPOSIT_BANK);
+			}
+		
+	
+			resetActivation(peachActivated, yoshiActivated);
+}
+
+void EventSquare::doSomething() {
+	if (landedOnSquare(getX(), getY(), getSW()->getPeach(), peachActivated))
+		activateEvent(getSW()->getPeach());
+
+	if (landedOnSquare(getX(), getY(), getSW()->getYoshi(), yoshiActivated))
+		activateEvent(getSW()->getYoshi());
+
+		
+	
+}
+
+void EventSquare::activateEvent(Avatar* avatar) {
+	switch (randInt(1, 3)) {
+	case 1: //Teleporting
+		avatar->teleport();
+		getSW()->playSound(SOUND_PLAYER_TELEPORT);
+		break;
+	case 2:  //Swap positions
+		avatar->swapPosition(avatar->getPlayerNum() == 1 ? getSW()->getYoshi() : getSW()->getPeach());
+		yoshiActivated = avatar->getPlayerNum() == 1 ? true : yoshiActivated;  //Prevents other avatar from teleporting
+		peachActivated = avatar->getPlayerNum() == 2 ? true : peachActivated;  //Prevents other avatar from teleporting
+		getSW()->playSound(SOUND_PLAYER_TELEPORT);
+		break;
+	case 3: //Give vortex
+		avatar->setVortex(true);
+		getSW()->playSound(SOUND_GIVE_VORTEX);
+		break;
+	}
+}
+
 void Vortex::doSomething() {
 
 }
@@ -280,7 +441,7 @@ void Avatar::doSomething()
 		}
 		else {
 	
-				if (getSW()->boardContents(getX(), getY()) == Board::down_dir_square) { //If on top of a dir square
+			if (getSW()->boardContents(getX(), getY()) == Board::down_dir_square) { //If on top of a dir square
 				changeDirection('d');
 			}
 			else if (getSW()->boardContents(getX(), getY()) == Board::up_dir_square) {
@@ -296,14 +457,13 @@ void Avatar::doSomething()
 					cerr << checkFork(getActorDirection()) << endl;
 					int tr = getSW()->getAction(playerNum);
 					cerr << tr << endl;
-
 				if (getSW()->getAction(playerNum) == ACTION_LEFT && checkFork(getActorDirection()).find("l") != std::string::npos) {
 					changeDirection('l');
 				}
 				else if (getSW()->getAction(playerNum) == ACTION_RIGHT && checkFork(getActorDirection()).find("r") != std::string::npos) {
 					changeDirection('r');
 				}
-				else if (/*getSW()->getAction(playerNum) == ACTION_DOWN && */checkFork(getActorDirection()).find("d") != std::string::npos) {
+				else if (getSW()->getAction(playerNum) == ACTION_DOWN && checkFork(getActorDirection()).find("d") != std::string::npos) {
 					changeDirection('d');
 				}
 				else if (getSW()->getAction(playerNum) == ACTION_UP && checkFork(getActorDirection()).find("u") != std::string::npos) {
@@ -333,6 +493,7 @@ void Avatar::doSomething()
 				changeDirection('d');
 			}
 			changeDirection();
+			cerr << getActorDirection() << endl;
 			moveActor(getDirection());
 			ticks_to_move--;  //Decrement ticks to move
 			if (!ticks_to_move)  //If ticks to move is zero, set waiting to roll to true

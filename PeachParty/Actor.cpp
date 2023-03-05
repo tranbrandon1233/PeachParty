@@ -140,29 +140,21 @@ std::string Actor::checkFork(int dir) const {
 void Actor::moveActor() {
 	switch (getActorDirection()) {
 	case 0:
-		if (!getSW()->wallFound(getX() + 2, getY()))  //If coordinates have not been passed before, move there
 			moveTo(getX() + 2, getY());
-		else
-			changeDirection();
+	
 		break;
 	case 90:
-		if (!getSW()->wallFound(getX(), getY()+2))  //If coordinates have not been passed before, move there
 			moveTo(getX(), getY()+2);
-		else
-			changeDirection();
+	
 
 		break;
 	case 180:
-		if (!getSW()->wallFound(getX() - 2, getY()))  //If coordinates have not been passed before, move there
 			moveTo(getX() - 2, getY());
-		else
-			changeDirection();
+
 		break;
 	case 270:
-		if (!getSW()->wallFound(getX(), getY()-2))  //If coordinates have not been passed before, move there
 			moveTo(getX(), getY()-2);
-		else
-			changeDirection();
+	
 		break;
 
 	}
@@ -542,7 +534,11 @@ void Avatar::doSomething()
 				}
 			}
 			changeDirection();
-			moveActor();
+			if(checkValidDir())
+				moveActor();
+			else {
+				changeDirection();
+			}
 			ticks_to_move--;  //Decrement ticks to move
 			if (!ticks_to_move)  //If ticks to move is zero, set waiting to roll to true
 				waitingToRoll = true;

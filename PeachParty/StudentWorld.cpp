@@ -96,20 +96,53 @@ int StudentWorld::move()
 
 
 	for (auto actor : m_actors) {
-		if (actor != nullptr){
+		if (actor != nullptr && actor->getStatus()){
 				actor->doSomething();  //Each actor runs doSomething every tick
+				/*  Causes memory access error
+				if (!actor->getStatus()) {
+					//m_actors.remove(actor);
+					delete actor;
+				*/
 		}
 	}
 
+	// Update the Game Status 
+	if (getPeach() != nullptr && getYoshi() != nullptr) { //Display text 
+		setGameStatText("Peach's Coins: " + std::to_string(getPeach()->getCoins()) + "  Peach's Stars: " + std::to_string(getPeach()->getStars()) + "\nYoshi's Coins: " + std::to_string(getYoshi()->getCoins()) + "  Yoshi's Stars: " + std::to_string(getYoshi()->getStars()));
+		setFinalScore(getYoshi()->getStars(), getYoshi()->getCoins());
+		setFinalScore(getPeach()->getStars(), getPeach()->getCoins());
+	}
+	else if (getPeach() != nullptr) { 
+		if(getPeach()->getCoins() != NULL && getPeach()->getStars() != NULL)
+		setGameStatText("Peach's Coins: " + std::to_string(getPeach()->getCoins()) + "  Peach's Stars: " + std::to_string(getPeach()->getStars()));
+	}
+	else if (getYoshi() != nullptr) {
+		if (getYoshi()->getCoins() != NULL && getYoshi()->getStars() != NULL)
+			setGameStatText("Yoshi's Coins: " + std::to_string(getPeach()->getCoins()) + "  Yoshi's Stars: " + std::to_string(getPeach()->getStars()));
+	}
 
-	//return checkFinish() ? GWSTATUS_PEACH_WON : GWSTATUS_YOSHI_WON;
+			if (timeRemaining() == 0)
+		{
+			
+				playSound(SOUND_GAME_FINISHED);
+				if (getYoshi()->getCoins() + getYoshi()->getStars() > getPeach()->getCoins() + getPeach()->getStars())
+			{
+					setFinalScore(getYoshi()->getStars(), getYoshi()->getCoins());
+				return GWSTATUS_YOSHI_WON;
+			}
+			else // peach won
+			{
+					setFinalScore(getPeach()->getStars(), getPeach()->getCoins());
+					return GWSTATUS_PEACH_WON;
+			}
+		}
+
 	return GWSTATUS_CONTINUE_GAME;
 }
 
 void StudentWorld::cleanUp()
 {
 	for (Actor* i :m_actors) {  //Delete all actors in vector
-		m_actors.remove(i);
 		delete i;
 	}
 	m_actors.clear(); //Clear vector

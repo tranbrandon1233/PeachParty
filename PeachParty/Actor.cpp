@@ -140,25 +140,29 @@ std::string Actor::checkFork(int dir) const {
 void Actor::moveActor() {
 	switch (getActorDirection()) {
 	case 0:
-	//	if (!coordFound(getX() + 2, getY()))  //If coordinates have not been passed before, move there
-				moveTo(getX() + 2, getY());
-		
+		if (!getSW()->wallFound(getX() + 2, getY()))  //If coordinates have not been passed before, move there
+			moveTo(getX() + 2, getY());
+		else
+			changeDirection();
 		break;
 	case 90:
-		//if (!coordFound(getX(), getY()+2))
-			moveTo(getX(), getY() + 2);
-	
+		if (!getSW()->wallFound(getX(), getY()+2))  //If coordinates have not been passed before, move there
+			moveTo(getX(), getY()+2);
+		else
+			changeDirection();
 
 		break;
 	case 180:
-	//	if (!coordFound(getX() - 2, getY()))
+		if (!getSW()->wallFound(getX() - 2, getY()))  //If coordinates have not been passed before, move there
 			moveTo(getX() - 2, getY());
-	
-
+		else
+			changeDirection();
 		break;
 	case 270:
-	//	if (!coordFound(getX(), getY() - 2))
-		moveTo(getX(), getY() - 2);
+		if (!getSW()->wallFound(getX(), getY()-2))  //If coordinates have not been passed before, move there
+			moveTo(getX(), getY()-2);
+		else
+			changeDirection();
 		break;
 
 	}
@@ -474,13 +478,15 @@ bool Actor::forkContains(std::string dir) {
 }
 void Avatar::doSomething() 
 	{
+	int input = getSW()->getAction(playerNum);
+
 		if (waitingToRoll) {   //Check if waiting to roll
-			if (getSW()->getAction(playerNum) == ACTION_ROLL) {
+			if (input == ACTION_ROLL) {
 				changeDirection();  //Change direction if needed
 				ticks_to_move = 8 * randInt(1, 10);  //Set ticks to move
 				waitingToRoll = false;  //No longer waiting to roll
 			}
-			else if (getSW()->getAction(playerNum) == ACTION_FIRE && vortex) {  //If firing and has a vortex
+			else if (input == ACTION_FIRE && vortex) {  //If firing and has a vortex
 				switch (getActorDirection()) {  //Create vortex based on direction
 				case 0:
 					getSW()->addVortex(getX()+SPRITE_WIDTH, getY(), getActorDirection());
@@ -518,47 +524,24 @@ void Avatar::doSomething()
 			else if (getSW()->boardContents(getX(), getY()) == Board::right_dir_square) {
 				changeDirection('r');
 			}
-			else if (checkFork(getActorDirection()) != "") { //If there is a fork, change direction based on user input
-					cerr << checkFork(getActorDirection()) << endl;
-					int tr = getSW()->getAction(playerNum);
-					cerr << tr << endl;
-				if (getSW()->getAction(playerNum) == ACTION_LEFT && forkContains("l")) {
+			else if (checkFork(getActorDirection()) != "") { //If there is a fork, change direction based on user input				
+				if (input == ACTION_LEFT && forkContains("l")) {
 					changeDirection('l');
 				}
-				else if (getSW()->getAction(playerNum) == ACTION_RIGHT && forkContains("r")) {
+				else if (input == ACTION_RIGHT && forkContains("r")) {
 					changeDirection('r');
 				}
-				else if (getSW()->getAction(playerNum) == ACTION_DOWN && forkContains("d")) {
+				else if (input == ACTION_DOWN && forkContains("d")) {
 					changeDirection('d');
 				}
-				else if (getSW()->getAction(playerNum) == ACTION_UP && forkContains("u")) {
+				else if (input == ACTION_UP && forkContains("u")) {
 					changeDirection('u');
 				}
 				else {
 					return;
 				}
 			}
-			/*
-			switch (playerNum) {
-			case 1:
-				getPeachTemp()->next = new Coords(); //Track Peach's coords here
-				setPeachTemp(getPeachTemp()->next);
-				getPeachTemp()->x = getX();
-				getPeachTemp()->y = getY();
-				break;
-			case 2:
-				getYoshiTemp()->next = new Coords(); //Track Yoshi's coords here
-				setYoshiTemp(getYoshiTemp()->next);
-				getYoshiTemp()->x = getX();
-				getYoshiTemp()->y = getY();
-				break;
-			}
-			*/
-			if (getSW()->boardContents(getX(), getY()) == Board::down_dir_square) {
-				changeDirection('d');
-			}
 			changeDirection();
-			cerr << getActorDirection() << endl;
 			moveActor();
 			ticks_to_move--;  //Decrement ticks to move
 			if (!ticks_to_move)  //If ticks to move is zero, set waiting to roll to true
@@ -645,8 +628,6 @@ void Baddies::pauseAction(Avatar* avatar, bool activation, std::string baddie) {
 			}
 
 		}
-		int selfX = floor(getX() / SPRITE_WIDTH);
-		int avatarX = floor(avatar->getX()/SPRITE_WIDTH);
 			if (floor(getX()/SPRITE_WIDTH) != floor(avatar->getX()/SPRITE_WIDTH) || floor(avatar->getY()/SPRITE_HEIGHT) != floor(getY()/SPRITE_HEIGHT)){  //Reset once they move off of it
 				setPeachActivation(avatar->getPlayerNum() == 1 ? false : getPeachActivation());  //Set activation as needed
 				setYoshiActivation(avatar->getPlayerNum() == 2 ? false : getYoshiActivation());
@@ -715,7 +696,7 @@ void Baddies::doSomething(std::string baddie) {
 				setPaused(true);
 				setPauseCount(180);
 				if (baddie == "Bowser") {  //Only do this if Bowser
-					switch (randInt(1, 1)) {  //1 in 4 chance to create a dropping square
+					switch (randInt(1, 4)) {  //1 in 4 chance to create a dropping square
 					case 1:
 						getSW()->deleteSquare(getX(), getY());
 						getSW()->addDroppingSquare(getX(), getY());

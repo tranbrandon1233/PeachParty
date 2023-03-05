@@ -96,16 +96,11 @@ int StudentWorld::move()
 
 
 	for (auto actor : m_actors) {
-		if (actor != nullptr) {  
-			if (actor->getSW() != nullptr) {  //Check for validity
+		if (actor != nullptr){
 				actor->doSomething();  //Each actor runs doSomething every tick
-				if (!actor->getStatus()) {
-					m_actors.remove(actor);
-					delete actor;  //Delete actor if it is dead
-				}
-			}
 		}
 	}
+
 
 	//return checkFinish() ? GWSTATUS_PEACH_WON : GWSTATUS_YOSHI_WON;
 	return GWSTATUS_CONTINUE_GAME;
@@ -161,16 +156,12 @@ const bool StudentWorld::wallFound(int x, int y)  //Check if there is an overlap
 void StudentWorld::deleteSquare(int x, int y) {
 	for (auto actor : m_actors) {
 		if (actor->getX() == x && actor->getY() == y && actor->isSquare()) {  //Check if there is an actor at (x,y) and is a square
-			m_actors.remove(actor); //Remove and delete it
-			delete actor;  
+			actor->setStatus(false);
 			break;
 		}
 	}
 }
-void StudentWorld::addActor(Actor* actor) {  //Add actors into list
-	if (actor != nullptr && actor->getSW() != nullptr)
-		m_actors.push_back(actor);
-}
+
 void StudentWorld::addPeach(const int x, const int y) {  //Methods for all actors
 	m_yoshi = new Avatar(this, 1, x, y);
 	addActor(m_yoshi);
@@ -190,3 +181,7 @@ void StudentWorld::addDroppingSquare(const int x, const int y) { addActor(new Dr
 void StudentWorld::addBowser(const int x, const int y) { addActor(new Bowser(this, x, y)); }
 void StudentWorld::addBoo(const int x, const int y) { addActor(new Boo(this, x, y)); }
 
+void StudentWorld::addActor(Actor* actor) {  //Add actors into list
+	if (actor != nullptr && actor->getSW() != nullptr)
+		m_actors.push_back(actor);
+}

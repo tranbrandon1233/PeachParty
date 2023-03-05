@@ -715,7 +715,7 @@ void Baddies::doSomething(std::string baddie) {
 				setPaused(true);
 				setPauseCount(180);
 				if (baddie == "Bowser") {  //Only do this if Bowser
-					switch (randInt(1, 4)) {  //1 in 4 chance to create a dropping square
+					switch (randInt(1, 1)) {  //1 in 4 chance to create a dropping square
 					case 1:
 						getSW()->deleteSquare(getX(), getY());
 						getSW()->addDroppingSquare(getX(), getY());

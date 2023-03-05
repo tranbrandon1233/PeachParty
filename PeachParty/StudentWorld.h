@@ -23,14 +23,8 @@ public:
   Avatar* getPeach() { return m_peach; }
   Avatar* getYoshi() { return m_yoshi; }
   void addActor(Actor* actor);
-  void addPeach(const int x, const int y) { 
-	  m_yoshi = new Avatar(this, 1, x, y);
-	  addActor(m_yoshi);
-  }  
-  void addYoshi(const int x, const int y) { 
-	  m_peach = new Avatar(this, 2, x, y);
-		  addActor(m_peach); 
-  }
+  void addPeach(const int x, const int y);
+  void addYoshi(const int x, const int y);
  void deleteSquare(int x, int y);
   void addRedCoin(const int x, const int y);
   void addBlueCoin(const int x, const int y);

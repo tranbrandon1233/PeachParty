@@ -645,9 +645,9 @@ void Baddies::pauseAction(Avatar* avatar, bool activation, std::string baddie) {
 			}
 
 		}
-		int selfX = getX() / SPRITE_WIDTH;
-		int avatarX = avatar->getX();
-			if (getX()/SPRITE_WIDTH != avatar->getX()/SPRITE_WIDTH || avatar->getY()/SPRITE_HEIGHT != getY()/SPRITE_HEIGHT){  //Reset once they move off of it
+		int selfX = floor(getX() / SPRITE_WIDTH);
+		int avatarX = floor(avatar->getX()/SPRITE_WIDTH);
+			if (floor(getX()/SPRITE_WIDTH) != floor(avatar->getX()/SPRITE_WIDTH) || floor(avatar->getY()/SPRITE_HEIGHT) != floor(getY()/SPRITE_HEIGHT)){  //Reset once they move off of it
 				setPeachActivation(avatar->getPlayerNum() == 1 ? false : getPeachActivation());  //Set activation as needed
 				setYoshiActivation(avatar->getPlayerNum() == 2 ? false : getYoshiActivation());
 			}
